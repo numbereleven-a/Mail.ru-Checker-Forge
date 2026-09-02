@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mail.ru Checker Forge</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="css/popup.css" />
+    <script src="js/theme.js"></script>
+    <script src="js/text-utils.js"></script>
+    <script src="js/popup.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-left">
+                <a href="#" class="gomail tooltip-anchor" data-tooltip="Открыть Входящие">
+                    <img src="img/logo.png" alt="Mail.ru" style="height:18px;filter:brightness(0) invert(1);" />
+                </a>
+            </div>
+            <div class="header-right">
+                <a href="#" class="action-btn update tooltip-anchor tooltip-left" data-tooltip="Обновить">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </a>
+                <a href="#" class="action-btn settings tooltip-anchor tooltip-left" data-tooltip="Настройки">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a2 2 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a2 2 0 0 1 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </a>
+            </div>
+        </header>
+        <div id="content" class="content-area">
+            <div class="skeleton-wrapper" id="skeleton-loader">
+                <div class="skeleton-header"><div class="skeleton-email skeleton-shimmer"></div><div class="skeleton-count skeleton-shimmer"></div></div>
+                <div class="skeleton-item"><div class="skeleton-avatar skeleton-shimmer"></div><div class="skeleton-lines"><div class="skeleton-line short skeleton-shimmer"></div><div class="skeleton-line long skeleton-shimmer"></div><div class="skeleton-line tiny skeleton-shimmer"></div></div></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

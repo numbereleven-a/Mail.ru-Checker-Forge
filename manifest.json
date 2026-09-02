@@ -1,0 +1,30 @@
+{
+   "action": {
+      "default_icon": {
+         "128": "img/128_activ.png",
+         "16": "img/16_activ.png",
+         "48": "img/48_activ.png"
+      },
+      "default_popup": "popup.html",
+      "default_title": "Mail.ru Checker Forge"
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "description": "Отображение количества непрочитанных сообщений в почтовом ящике Mail.ru",
+   "host_permissions": [ "https://portal.mail.ru/*", "https://auth.mail.ru/*", "https://e.mail.ru/*", "https://mailru-checker-api.e.mail.ru/*" ],
+   "icons": {
+      "128": "img/128_activ.png",
+      "16": "img/16_activ.png",
+      "48": "img/48_activ.png"
+   },
+   "manifest_version": 3,
+   "minimum_chrome_version": "120",
+   "name": "Mail.ru Checker Forge",
+   "options_ui": {
+      "open_in_tab": true,
+      "page": "options.html"
+   },
+   "permissions": [ "idle", "notifications", "storage", "offscreen", "alarms" ],
+   "version": "1.0.0"
+}

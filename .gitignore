@@ -1,0 +1,9 @@
+_metadata/
+*.crx
+*.pem
+*.key
+*.log
+artifacts/
+tests/*
+!tests/regression.js
+AGENTS.md

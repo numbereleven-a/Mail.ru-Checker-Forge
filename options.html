@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mail.ru Checker Forge</title>
+    <link rel="stylesheet" href="css/options.css">
+    <script src="js/theme.js"></script>
+    <script src="js/text-utils.js"></script>
+    <script src="js/options.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="page-header">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">@</div>
+                <h1>Mail.ru Checker Forge</h1>
+            </div>
+            <div class="version" id="app_version">Версия ...</div>
+        </header>
+
+        <main>
+            <section class="settings-card account-card">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg>
+                    <h2>Почтовые ящики</h2>
+                </div>
+                <div id="account_info" class="account-panel">
+                    <div class="loading-state"><span class="spinner"></span> Загрузка данных...</div>
+                </div>
+            </section>
+
+            <section class="settings-card">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 8.96 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3v-4h.08A1.7 1.7 0 0 0 4.6 8.96a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.96 4.6 1.7 1.7 0 0 0 10 3.08V3h4v.08a1.7 1.7 0 0 0 1.04 1.52 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.92 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+                    <h2>Основные настройки</h2>
+                </div>
+
+                <div class="settings-list">
+                    <div class="setting-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                            <div><label for="time">Интервал проверки</label><span>Как часто обновлять почту</span></div>
+                        </div>
+                        <div class="select-control">
+                            <span class="select-value" id="time_text">30 секунд</span>
+                            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                            <select id="time">
+                                <option value="30000">30 секунд</option>
+                                <option value="60000">1 минута</option>
+                                <option value="180000">3 минуты</option>
+                                <option value="300000">5 минут</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M8 5v4M8 13h8M8 16h5"/></svg></div>
+                            <div><label for="message_limit">Писем в списке</label><span>Сколько показывать для каждого ящика</span></div>
+                        </div>
+                        <div class="number-control">
+                            <input id="message_limit" type="number" min="1" max="100" step="1" value="5" inputmode="numeric" aria-label="Количество отображаемых писем">
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg></div>
+                            <div><label for="sound_notif">Звук уведомления</label><span>Сигнал при новом письме</span></div>
+                        </div>
+                        <div class="sound-control">
+                            <div class="select-control sound-select">
+                                <span class="select-value" id="sound_notif_text">Мягкий pop</span>
+                                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                                <select id="sound_notif">
+                                    <option value="0">Без звука</option>
+                                    <option value="01-glass-drop.wav">Стеклянная капля</option>
+                                    <option value="02-soft-bell.wav">Мягкий колокол</option>
+                                    <option value="03-airy-chime.wav">Воздушный перелив</option>
+                                    <option value="04-warm-pluck.wav">Тёплый щипок</option>
+                                    <option value="05-gentle-pop.wav" selected>Мягкий pop</option>
+                                    <option value="06-clear-double.wav">Чистый двойной</option>
+                                    <option value="07-mellow-triad.wav">Спокойный аккорд</option>
+                                    <option value="08-minimal-ping.wav">Минимальный ping</option>
+                                </select>
+                            </div>
+                            <button id="test_sound" type="button" class="icon-button" title="Прослушать выбранный звук" aria-label="Прослушать выбранный звук">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 10h16M10 10v9"/></svg></div>
+                            <div><label for="interface">Интерфейс почты</label><span>Где открывать Mail.ru</span></div>
+                        </div>
+                        <div class="select-control">
+                            <span class="select-value" id="interface_text">Обычный</span>
+                            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                            <select id="interface">
+                                <option value="win">Обычный</option>
+                                <option value="tel">Упрощённый</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-1-.8-1.8-1.8-1.8H17a2 2 0 0 1-2-2V6.8C15 4.7 13.7 3 12 3Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="10" cy="7.5" r=".8"/><circle cx="8.5" cy="15" r=".8"/></svg></div>
+                            <div><label for="theme_select">Тема</label><span>Цветовая схема интерфейса</span></div>
+                        </div>
+                        <div class="select-control">
+                            <span class="select-value" id="theme_text">Системная</span>
+                            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                            <select id="theme_select">
+                                <option value="system">Системная</option>
+                                <option value="light">Светлая</option>
+                                <option value="dark">Тёмная</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-row reminder-row">
+                        <div class="setting-description">
+                            <div class="setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></div>
+                            <div><label for="repeat_unread_sound">Повторять сигнал</label><span>Каждые 30 секунд, пока есть непрочитанные письма</span></div>
+                        </div>
+                        <label class="switch" title="Повторять звук для непрочитанных писем">
+                            <input id="repeat_unread_sound" type="checkbox">
+                            <span class="switch-track" aria-hidden="true"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <button id="save" type="button" class="save-button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l4 4v14H3V3h2Zm3 0v6h8V3M7 21v-8h10v8"/></svg>
+                Сохранить настройки
+            </button>
+        </main>
+
+        <footer><a href="privacy.html">Политика конфиденциальности</a></footer>
+    </div>
+
+    <audio id="sound" preload="auto"></audio>
+    <div id="options_mess" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg> Сохранено</div>
+</body>
+</html>
