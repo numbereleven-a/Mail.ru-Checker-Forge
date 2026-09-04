@@ -118,7 +118,21 @@ function notAuth() {
     if (btn) { btn.onmouseover = function() { this.style.background = '#0054dd'; }; btn.onmouseout = function() { this.style.background = '#005ff9'; }; }
     content.appendChild(div);
 }
-function createMessageAction(action, msgId, email, label, extraClass, svg) {
+function createSvgIcon(paths, color, width, size) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    var attrs = { viewBox: '0 0 24 24', fill: 'none', stroke: color,
+        'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+    if (size) { attrs.width = size; attrs.height = size; }
+    Object.keys(attrs).forEach(function(key) { svg.setAttribute(key, attrs[key]); });
+    paths.forEach(function(d) {
+        var path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', d);
+        svg.appendChild(path);
+    });
+    return svg;
+}
+function createMessageAction(action, msgId, email, label, extraClass) {
     var button = document.createElement('button');
     button.type = 'button';
     button.className = 'message-action tooltip-anchor tooltip-left' + (extraClass ? ' ' + extraClass : '');
@@ -127,7 +141,10 @@ function createMessageAction(action, msgId, email, label, extraClass, svg) {
     button.dataset.messageAction = action;
     button.dataset.msgId = String(msgId == null ? '' : msgId);
     button.dataset.email = String(email || '');
-    button.innerHTML = svg;
+    var paths = action === 'read'
+        ? ['M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z', 'm4 6 8 6 8-6', 'm9 16 2 2 4-4']
+        : ['M3 6h18', 'M8 6V4h8v2', 'm19 6-1 14H6L5 6', 'M10 11v5M14 11v5'];
+    button.appendChild(createSvgIcon(paths, 'currentColor', '1.8'));
     return button;
 }
 function createAvatar(avatarValue) {
@@ -243,9 +260,9 @@ function insertMess(fragment, messages, email, count, displayLimit) {
             messageActions.className = 'message-actions';
             messageActions.setAttribute('aria-label', 'Действия с письмом');
             if (msg.flags && msg.flags.unread) {
-                messageActions.appendChild(createMessageAction('read', msg.id, email, 'Прочитать', '', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path><path d="m4 6 8 6 8-6"></path><path d="m9 16 2 2 4-4"></path></svg>'));
+                messageActions.appendChild(createMessageAction('read', msg.id, email, 'Прочитать', ''));
             }
-            messageActions.appendChild(createMessageAction('delete', msg.id, email, 'Удалить в корзину', 'message-action-delete', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="m19 6-1 14H6L5 6"></path><path d="M10 11v5M14 11v5"></path></svg>'));
+            messageActions.appendChild(createMessageAction('delete', msg.id, email, 'Удалить в корзину', 'message-action-delete'));
 
             mesDiv.appendChild(avatarContainer);
             mesDiv.appendChild(messageContent);
@@ -383,7 +400,10 @@ function showActionNotification(message, success) {
     var existing = document.getElementById('action-notification'); if (existing) existing.remove();
     var notif = document.createElement('div'); notif.id = 'action-notification'; notif.className = 'copy-notification';
     var color = success ? '#22c55e' : '#f87171';
-    notif.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg><span>' + escapeHtml(message) + '</span>';
+    notif.appendChild(createSvgIcon(['M12 3v12', 'm7 10 5 5 5-5', 'M5 21h14'], color, '2', '18'));
+    var messageText = document.createElement('span');
+    messageText.textContent = decodeHtmlEntities(message || '');
+    notif.appendChild(messageText);
     document.body.appendChild(notif);
     setTimeout(function() { notif.classList.add('show'); }, 10);
     setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 300); }, 2500);

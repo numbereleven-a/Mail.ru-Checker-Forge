@@ -7,6 +7,7 @@ self.addEventListener('unhandledrejection', function(event) {
     event.preventDefault();
 });
 if (typeof importScripts === 'function') {
+    importScripts('js/chrome-audio.js');
     try { importScripts('js/punycode.min.js'); } catch(e) { console.error('Failed to load punycode:', e); }
     try { importScripts('js/text-utils.js'); } catch(e) { console.error('Failed to load text utilities:', e); }
 }
@@ -319,14 +320,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         return true;
     }
 });
-async function createOffscreen() {
-    if (await chrome.offscreen.hasDocument()) return;
-    await chrome.offscreen.createDocument({
-        url: 'offscreen.html',
-        reasons: ['AUDIO_PLAYBACK'],
-        justification: 'Sound notification'
-    });
-}
 var lastSoundTime = 0;
 function safePlaySound() {
     const now = Date.now();

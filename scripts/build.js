@@ -11,7 +11,7 @@ fs.mkdirSync(output, { recursive: true });
 const files = ['background.js', 'popup.html', 'options.html', 'privacy.html',
     'css/options.css', 'css/popup.css', 'js/options.js', 'js/popup.js',
     'js/theme.js', 'js/text-utils.js', 'js/punycode.min.js', 'LICENSE'];
-if (browserName === 'chrome') files.push('offscreen.html', 'offscreen.js');
+if (browserName === 'chrome') files.push('offscreen.html', 'offscreen.js', 'js/chrome-audio.js');
 for (const directory of ['img', 'sound']) {
     for (const name of fs.readdirSync(path.join(root, directory))) {
         if (directory === 'img' && name.startsWith('readme-')) continue;
@@ -30,7 +30,7 @@ manifest.permissions = manifest.permissions.filter(permission => permission !== 
 delete manifest.minimum_chrome_version;
 manifest.browser_specific_settings = { gecko: {
     id: 'mailru-checker-forge@numbereleven-a',
-    strict_min_version: '140.0',
+    strict_min_version: '142.0',
     data_collection_permissions: {
         required: ['personallyIdentifyingInfo', 'authenticationInfo', 'personalCommunications']
     }

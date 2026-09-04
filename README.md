@@ -8,10 +8,10 @@
 
 [Последний релиз](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/latest)
 
-| Браузер | Архив версии 1.0.1 | Установка |
+| Браузер | Архив версии 1.0.2 | Установка |
 | --- | --- | --- |
-| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.1/Mail.ru-Checker-Forge-Chrome-1.0.1.zip) | Распакованное расширение |
-| Firefox 140+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.1/Mail.ru-Checker-Forge-Firefox-1.0.1.zip) | Тестовая сборка, временное дополнение |
+| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.2/Mail.ru-Checker-Forge-Chrome-1.0.2.zip) | Распакованное расширение |
+| Firefox 142+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.2/Mail.ru-Checker-Forge-Firefox-1.0.2.zip) | Тестовая сборка, временное дополнение |
 
 Firefox: подпись Mozilla и публикация в каталоге пока не выполнены. Временное дополнение удаляется после перезапуска браузера.
 
@@ -84,7 +84,7 @@ Firefox не поддерживает кнопки внутри системны
 node scripts/build.js
 ```
 
-Результат: отдельные папки `artifacts/1.0.1/chrome` и `artifacts/1.0.1/firefox`. Для одного браузера используйте `node scripts/build.js chrome` или `node scripts/build.js firefox`. Перед повторной сборкой переместите предыдущую папку результата.
+Результат: отдельные папки `artifacts/1.0.2/chrome` и `artifacts/1.0.2/firefox`. Для одного браузера используйте `node scripts/build.js chrome` или `node scripts/build.js firefox`. Перед повторной сборкой переместите предыдущую папку результата.
 
 Для создания ZIP упакуйте содержимое нужной папки: `manifest.json` должен находиться в корне архива.
 

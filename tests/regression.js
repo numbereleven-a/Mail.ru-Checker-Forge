@@ -117,6 +117,9 @@ function createBackgroundEnvironment(firefox = false) {
         chrome,
         console,
         importScripts(...files) {
+            if (files.includes('js/chrome-audio.js')) {
+                vm.runInContext(fs.readFileSync(path.join(projectRoot, 'js/chrome-audio.js'), 'utf8'), context, { filename: 'js/chrome-audio.js' });
+            }
             if (files.includes('js/text-utils.js')) {
                 vm.runInContext(fs.readFileSync(textUtilsPath, 'utf8'), context, { filename: 'js/text-utils.js' });
             }
@@ -366,7 +369,7 @@ function testOptionsSaveOrdering() {
             runtime: {
                 lastError: null,
                 onMessage: { addListener() {} },
-                getManifest() { return { version: '1.0.1' }; },
+                getManifest() { return { version: '1.0.2' }; },
                 sendMessage(_request, callback) {
                     sentSnapshots.push({ ...storage });
                     callback({ success: true });
@@ -445,7 +448,7 @@ function testStaticBoundaries() {
     assert(popupSource.includes('button.dataset.msgId'), 'Message IDs must be assigned through dataset');
     assert.strictEqual(manifest.name, 'Mail.ru Checker Forge');
     assert.strictEqual(manifest.action.default_title, 'Mail.ru Checker Forge');
-    assert.strictEqual(manifest.version, '1.0.1');
+    assert.strictEqual(manifest.version, '1.0.2');
     assert.strictEqual(manifest.minimum_chrome_version, '120');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'update_url'), false, 'The fork must not update from the original Web Store listing');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'key'), false, 'The fork must not reuse the original extension ID');
