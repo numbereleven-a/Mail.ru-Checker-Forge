@@ -6,8 +6,10 @@ self.addEventListener('unhandledrejection', function(event) {
     console.error('[MCL] Unhandled rejection:', event.reason);
     event.preventDefault();
 });
-try { importScripts('js/punycode.min.js'); } catch(e) { console.error('Failed to load punycode:', e); }
-try { importScripts('js/text-utils.js'); } catch(e) { console.error('Failed to load text utilities:', e); }
+if (typeof importScripts === 'function') {
+    try { importScripts('js/punycode.min.js'); } catch(e) { console.error('Failed to load punycode:', e); }
+    try { importScripts('js/text-utils.js'); } catch(e) { console.error('Failed to load text utilities:', e); }
+}
 function safeJsonParse(data) {
     try { return JSON.parse(data); } catch(e) { return null; }
 }
@@ -124,7 +126,7 @@ function createAccountInfo() {
 }
 function broadcastPublicState() {
     if (!app || !app.account) return;
-    chrome.runtime.sendMessage({ action: 'updateData', data: createPublicState() }).catch(function() {});
+    chrome.runtime.sendMessage({ action: 'updateData', data: createPublicState() }, function() { void chrome.runtime.lastError; });
 }
 const Storage = {
     get: function(key, callback) {
@@ -334,11 +336,21 @@ function safePlaySound() {
     }
 }
 function Sound() {}
+var backgroundAudio;
 Sound.prototype.play = function(soundFile) {
     getStorageValue("soundtrek", async function(trek) {
         trek = normalizeSoundFile(soundFile || trek);
         if (trek === '0' || trek === 0 || trek === "0") return;
         try {
+            if (!chrome.offscreen) {
+                if (!backgroundAudio) backgroundAudio = new Audio();
+                backgroundAudio.pause();
+                backgroundAudio.src = chrome.runtime.getURL('sound/' + trek);
+                backgroundAudio.volume = 0.6;
+                backgroundAudio.currentTime = 0;
+                await backgroundAudio.play();
+                return;
+            }
             await createOffscreen();
             var retries = 0;
             var maxRetries = 5;
@@ -356,7 +368,7 @@ Sound.prototype.play = function(soundFile) {
                 });
             };
             setTimeout(tryPlay, 300);
-        } catch (err) {}
+        } catch (err) { console.warn('Sound playback failed:', err.name); }
     });
 };
 function Utils() {}
@@ -395,7 +407,7 @@ Utils.prototype.request = function(options, callback, errorCallback) {
     });
 };
 Utils.prototype.send = function(obj) {
-    chrome.runtime.sendMessage(obj);
+    chrome.runtime.sendMessage(obj, function() { void chrome.runtime.lastError; });
 };
 Utils.prototype.guid = function() {
     function s4() {
@@ -449,7 +461,7 @@ View.prototype.addListener = function() {
         chrome.notifications.clear(notificationId, function() {});
         delete(this.messNotif[notificationId]);
     }.bind(this));
-    chrome.notifications.onButtonClicked.addListener(function callback(notificationId, buttonIndex) {
+    if (chrome.notifications.onButtonClicked) chrome.notifications.onButtonClicked.addListener(function callback(notificationId, buttonIndex) {
         var item = this.messNotif[notificationId];
         if (buttonIndex == 0) {
             if (item && item.mess) markMessageAsRead(item.mess.id, item.email, function() {});
@@ -475,6 +487,12 @@ View.prototype.notifications = function(mess, email) {
         priority: 1,
         buttons: [{title: "Прочитать"}, {title: "Закрыть"}]
     };
+    if (typeof browser !== 'undefined' && browser.runtime && browser.runtime.getBrowserInfo) {
+        opt.message += snippet ? '\n' + snippet : '';
+        delete opt.contextMessage;
+        delete opt.priority;
+        delete opt.buttons;
+    }
     chrome.notifications.create("", opt, function(notificationId){
         if (chrome.runtime.lastError) {
             console.warn('[MCL] Notification error:', chrome.runtime.lastError.message);

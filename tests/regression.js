@@ -13,7 +13,7 @@ const manifestPath = path.join(projectRoot, 'manifest.json');
 
 const wait = (ms = 40) => new Promise(resolve => setTimeout(resolve, ms));
 
-function createBackgroundEnvironment() {
+function createBackgroundEnvironment(firefox = false) {
     const storage = { timetest: 30000, interface: 'win' };
     const sessionStorage = {};
     const messageListeners = [];
@@ -152,7 +152,23 @@ function createBackgroundEnvironment() {
         self: { addEventListener() {} }
     };
 
+    if (firefox) {
+        delete context.importScripts;
+        delete chrome.offscreen;
+        delete chrome.notifications.onButtonClicked;
+        context.browser = { runtime: { getBrowserInfo() {} } };
+        context.Audio = class {
+            pause() {}
+            async play() { this.played = true; }
+        };
+        chrome.runtime.sendMessage = function(message, callback) { if (callback) callback(); };
+    }
     vm.createContext(context);
+    if (firefox) {
+        for (const file of ['js/punycode.min.js', 'js/text-utils.js']) {
+            vm.runInContext(fs.readFileSync(path.join(projectRoot, file), 'utf8'), context, { filename: file });
+        }
+    }
     vm.runInContext(fs.readFileSync(backgroundPath, 'utf8'), context, { filename: 'background.js' });
 
     return {
@@ -350,7 +366,7 @@ function testOptionsSaveOrdering() {
             runtime: {
                 lastError: null,
                 onMessage: { addListener() {} },
-                getManifest() { return { version: '1.0.0' }; },
+                getManifest() { return { version: '1.0.1' }; },
                 sendMessage(_request, callback) {
                     sentSnapshots.push({ ...storage });
                     callback({ success: true });
@@ -429,7 +445,7 @@ function testStaticBoundaries() {
     assert(popupSource.includes('button.dataset.msgId'), 'Message IDs must be assigned through dataset');
     assert.strictEqual(manifest.name, 'Mail.ru Checker Forge');
     assert.strictEqual(manifest.action.default_title, 'Mail.ru Checker Forge');
-    assert.strictEqual(manifest.version, '1.0.0');
+    assert.strictEqual(manifest.version, '1.0.1');
     assert.strictEqual(manifest.minimum_chrome_version, '120');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'update_url'), false, 'The fork must not update from the original Web Store listing');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'key'), false, 'The fork must not reuse the original extension ID');
@@ -469,8 +485,31 @@ function testStaticBoundaries() {
 
 }
 
+async function testFirefox() {
+    const env = createBackgroundEnvironment(true);
+    await wait();
+    const { context } = env;
+    assert.strictEqual(Object.keys(context.app.account.users).length, 2);
+    context.app.sound.play('05-gentle-pop.wav');
+    await wait();
+    assert.strictEqual(context.backgroundAudio.played, true);
+    assert(context.backgroundAudio.src.endsWith('/sound/05-gentle-pop.wav'));
+    context.app.sound.play('08-minimal-ping.wav');
+    await wait();
+    assert(context.backgroundAudio.src.endsWith('/sound/08-minimal-ping.wav'));
+    context.app.sound.play('0');
+    await wait();
+    assert(context.backgroundAudio.src.endsWith('/sound/08-minimal-ping.wav'));
+    context.app.view.notifications({ id: 'firefox-test', subject: 'Subject', snippet: 'Preview' }, 'first@example.com');
+    const notification = env.notificationOptions.at(-1);
+    assert.strictEqual(notification.message, 'Subject\nPreview');
+    assert.deepStrictEqual(Object.keys(notification).sort(), ['iconUrl', 'message', 'title', 'type']);
+    console.log('PASS: Firefox background scripts, callback messaging, multiple accounts, audio and notifications');
+}
+
 (async () => {
     await testBackground();
+    await testFirefox();
     testOptionsSaveOrdering();
     testPopupStorageFallback();
     testStaticBoundaries();

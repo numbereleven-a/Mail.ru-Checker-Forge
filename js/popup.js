@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() { init(); });
 function init() {
     document.querySelector('.gomail').addEventListener('click', function(e) { e.preventDefault(); openHome(); });
     document.querySelector('.settings').addEventListener('click', function(e) { e.preventDefault(); openSettings(); });
-    document.querySelector('.update').addEventListener('click', function(e) { e.preventDefault(); var btn = this; btn.classList.add('spinning'); setTimeout(function() { btn.classList.remove('spinning'); }, 1500); loadingView(); chrome.runtime.sendMessage({action: "forceUpdate"}).catch(function() {}); });
+    document.querySelector('.update').addEventListener('click', function(e) { e.preventDefault(); var btn = this; btn.classList.add('spinning'); setTimeout(function() { btn.classList.remove('spinning'); }, 1500); loadingView(); sendAction({action: "forceUpdate"}); });
     loadingView();
     loadMessageDisplayLimit(refreshData);
 }
@@ -16,8 +16,11 @@ function loadMessageDisplayLimit(callback) {
         if (typeof callback === 'function') callback();
     });
 }
-function openHome() { chrome.runtime.sendMessage({action: "openInbox"}).catch(function() {}); window.close(); }
-function openSettings() { chrome.runtime.sendMessage({action: "openSettings"}).catch(function() {}); window.close(); }
+function sendAction(message) {
+    chrome.runtime.sendMessage(message, function() { void chrome.runtime.lastError; });
+}
+function openHome() { sendAction({action: "openInbox"}); window.close(); }
+function openSettings() { sendAction({action: "openSettings"}); window.close(); }
 function loadingView() {
     var content = document.getElementById('content');
     var skeleton = document.getElementById('skeleton-loader');
@@ -161,7 +164,7 @@ function insertMess(fragment, messages, email, count, displayLimit) {
     emailSpan.className = 'account_name email-with-copy tooltip-anchor';
     emailSpan.textContent = email;
     emailSpan.setAttribute('data-tooltip', 'Открыть почту');
-    emailSpan.onclick = function() { chrome.runtime.sendMessage({action: "openInbox", email: email}).catch(function() {}); window.close(); };
+    emailSpan.onclick = function() { sendAction({action: "openInbox", email: email}); window.close(); };
     var copyIcon = document.createElement('span');
     copyIcon.className = 'copy-icon tooltip-anchor';
     copyIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
@@ -197,7 +200,7 @@ function insertMess(fragment, messages, email, count, displayLimit) {
                     if (e.target.classList.contains('unread-dot')) return;
                     var dot = div.querySelector('.unread-dot');
                     if (dot && !dot.classList.contains('hidden')) hideMessageElementOptimistically(dot, div);
-                    chrome.runtime.sendMessage({action: "openMessage", msgId: msgId, email: eml}).catch(function(){});
+                    sendAction({action: "openMessage", msgId: msgId, email: eml});
                 };
             })(msg.id, email, mesDiv);
             var avatarContainer = document.createElement('div');
