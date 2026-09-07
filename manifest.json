@@ -26,5 +26,5 @@
       "page": "options.html"
    },
    "permissions": [ "idle", "notifications", "storage", "offscreen", "alarms" ],
-   "version": "1.0.2"
+   "version": "1.0.3"
 }

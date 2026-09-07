@@ -3,17 +3,18 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const projectRoot = path.join(__dirname, '..');
+const projectRoot = process.env.FORGE_PROJECT_ROOT || path.join(__dirname, '..');
 const backgroundPath = path.join(projectRoot, 'background.js');
 const popupPath = path.join(projectRoot, 'js', 'popup.js');
 const textUtilsPath = path.join(projectRoot, 'js', 'text-utils.js');
 const optionsPath = path.join(projectRoot, 'js', 'options.js');
 const optionsHtmlPath = path.join(projectRoot, 'options.html');
 const manifestPath = path.join(projectRoot, 'manifest.json');
+const packageIsFirefox = Array.isArray(JSON.parse(fs.readFileSync(manifestPath, 'utf8')).background.scripts);
 
 const wait = (ms = 40) => new Promise(resolve => setTimeout(resolve, ms));
 
-function createBackgroundEnvironment(firefox = false) {
+function createBackgroundEnvironment(firefox = packageIsFirefox) {
     const storage = { timetest: 30000, interface: 'win' };
     const sessionStorage = {};
     const messageListeners = [];
@@ -271,8 +272,8 @@ async function testBackground() {
     }, 'first@example.com');
     const notification = env.notificationOptions.at(-1);
     assert.strictEqual(notification.title, 'X & Y', 'Notification sender must decode HTML entities');
-    assert.strictEqual(notification.message, 'A & B', 'Notification subject must decode HTML entities');
-    assert.strictEqual(notification.contextMessage, 'C "D"', 'Notification preview must decode HTML entities');
+    assert.strictEqual(notification.message, packageIsFirefox ? 'A & B\nC "D"' : 'A & B', 'Notification subject must decode HTML entities');
+    if (!packageIsFirefox) assert.strictEqual(notification.contextMessage, 'C "D"', 'Notification preview must decode HTML entities');
     assert.strictEqual(notification.iconUrl, 'chrome-extension://test/img/48_activ.png', 'Notification avatars must use HTTPS or the local fallback');
 
     firstUser.messages = [{ id: 123, folder: 7 }];
@@ -369,7 +370,7 @@ function testOptionsSaveOrdering() {
             runtime: {
                 lastError: null,
                 onMessage: { addListener() {} },
-                getManifest() { return { version: '1.0.2' }; },
+                getManifest() { return { version: '1.0.3' }; },
                 sendMessage(_request, callback) {
                     sentSnapshots.push({ ...storage });
                     callback({ success: true });
@@ -448,8 +449,11 @@ function testStaticBoundaries() {
     assert(popupSource.includes('button.dataset.msgId'), 'Message IDs must be assigned through dataset');
     assert.strictEqual(manifest.name, 'Mail.ru Checker Forge');
     assert.strictEqual(manifest.action.default_title, 'Mail.ru Checker Forge');
-    assert.strictEqual(manifest.version, '1.0.2');
-    assert.strictEqual(manifest.minimum_chrome_version, '120');
+    assert.strictEqual(manifest.version, '1.0.3');
+    if (packageIsFirefox) {
+        assert.strictEqual(manifest.browser_specific_settings.gecko.strict_min_version, '142.0');
+        assert(!manifest.permissions.includes('offscreen'));
+    } else assert.strictEqual(manifest.minimum_chrome_version, '120');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'update_url'), false, 'The fork must not update from the original Web Store listing');
     assert.strictEqual(Object.prototype.hasOwnProperty.call(manifest, 'key'), false, 'The fork must not reuse the original extension ID');
     assert(popupHtml.includes('<script src="js/text-utils.js"></script>'), 'Popup must load shared text utilities');
@@ -510,7 +514,8 @@ async function testFirefox() {
     console.log('PASS: Firefox background scripts, callback messaging, multiple accounts, audio and notifications');
 }
 
-(async () => {
+module.exports = { createBackgroundEnvironment, wait };
+if (require.main === module) (async () => {
     await testBackground();
     await testFirefox();
     testOptionsSaveOrdering();

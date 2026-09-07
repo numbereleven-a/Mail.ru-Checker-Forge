@@ -62,9 +62,13 @@ function tryGetFromStorage() {
 }
 function createCachedPublicState(result) {
     var users = {};
+    var accountState = result && result.accountState;
+    if (accountState && accountState.authStatus === false) return null;
+    var activeEmails = accountState && Array.isArray(accountState.emails) ? accountState.emails : null;
     Object.keys(result || {}).forEach(function(key) {
         if (key.indexOf('userState_') !== 0) return;
         var email = key.substring('userState_'.length);
+        if (activeEmails && activeEmails.indexOf(email) === -1) return;
         var state = result[key];
         if (!email || !state || typeof state !== 'object') return;
         users[email] = {

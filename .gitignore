@@ -6,4 +6,6 @@ _metadata/
 artifacts/
 tests/*
 !tests/regression.js
+!tests/review.js
+!tests/browser-smoke.js
 AGENTS.md

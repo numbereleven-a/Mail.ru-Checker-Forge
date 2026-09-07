@@ -1,10 +1,12 @@
 function decodeHtmlEntities(text) {
     if (!text) return '';
     var entities = { '&nbsp;': ' ', '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'" };
-    return text.replace(/&[#\w]+;/g, function(m) {
+    return String(text).replace(/&(?:#(?:[xX][0-9a-fA-F]+|[0-9]+)|\w+);/g, function(m) {
         if (m.startsWith('&#')) {
-            var num = parseInt(m.replace(/[&#;]/g, ''), 10);
-            if (!isNaN(num)) return String.fromCharCode(num);
+            var hex = m[2].toLowerCase() === 'x';
+            var num = parseInt(m.slice(hex ? 3 : 2, -1), hex ? 16 : 10);
+            if (num === 0 || num > 0x10ffff || (num >= 0xd800 && num <= 0xdfff)) return '\uFFFD';
+            return String.fromCodePoint(num);
         }
         return entities[m] || m;
     });

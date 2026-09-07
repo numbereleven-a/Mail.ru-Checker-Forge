@@ -601,6 +601,7 @@ Account.prototype.getEmail = function() {
 };
 Account.prototype.parsResult = function(data) {
     this._requestInFlight = false;
+    if (this.paused) return;
     var result = safeJsonParse(data);
     this.ready = true;
     if (!result) { this.status = false; app.view.showNumber(); broadcastPublicState(); return; }
@@ -636,7 +637,12 @@ Account.prototype.reconcileUsers = function(emailList) {
         seen[email] = true;
         nextUsers[email] = this.users[email] || new User(email);
     }
+    for (var previousEmail in this.users) {
+        if (!nextUsers[previousEmail]) this.users[previousEmail].dispose();
+    }
     this.users = nextUsers;
+    Storage.set('accountState', { authStatus: true, emails: Object.keys(nextUsers) });
+    app.view.showNumber();
 };
 Account.prototype.addUser = function(email) {
     if (this.users[email] == undefined) this.users[email] = new User(email);
@@ -663,10 +669,12 @@ Account.prototype.resume = function() {
     }
 };
 Account.prototype.clear = function() {
+    for (var email in this.users) this.users[email].dispose();
     this.currentEmail = null;
     this.unreadCount = 0;
     this.emails = [];
     this.users = {};
+    Storage.set('accountState', { authStatus: false, emails: [] });
     broadcastPublicState();
 };
 function User(email) {
@@ -683,9 +691,11 @@ function User(email) {
     this._startPending = false;
     this._startInFlight = false;
     this.paused = false;
+    this.disposed = false;
     var self = this;
     var stateKey = "userState_" + this.email;
     Storage.getMany(["userExcludeFolder", stateKey], function(result) {
+        if (self.disposed) return;
         var val = result.userExcludeFolder;
         if (val != undefined) {
             try {
@@ -710,7 +720,7 @@ function User(email) {
 }
 User.prototype.init = function() { this.getToken(); };
 User.prototype.start = function() {
-    if (this.paused) return;
+    if (this.paused || this.disposed) return;
     if (this._startInFlight) return;
     if (!this._ready) {
         this._startPending = true;
@@ -720,9 +730,22 @@ User.prototype.start = function() {
     this.init();
 };
 User.prototype.finishStart = function() { this._startInFlight = false; };
+User.prototype.dispose = function() {
+    this.disposed = true;
+    this.paused = true;
+    this._startPending = false;
+    this.token = null;
+};
+User.prototype.ignoreResponse = function() {
+    if (!this.paused && !this.disposed) return false;
+    delete this._pendingCount;
+    this.finishStart();
+    return true;
+};
 User.prototype.pause = function() { this.paused = true; };
 User.prototype.resume = function() { this.paused = false; };
 User.prototype.saveState = function() {
+    if (this.disposed) return;
     var storedMessages = Array.isArray(this.messages) ? this.messages.map(sanitizeMessageForUi).filter(Boolean) : [];
     setStorageValue("userState_" + this.email, { count: this.count, messages: storedMessages });
 };
@@ -742,6 +765,7 @@ User.prototype.errorRequestToken = function(error) {
     this.finishStart();
 };
 User.prototype.parsTokenSdcResult = function(data) {
+    if (this.ignoreResponse()) return;
     var result = safeJsonParse(data);
     if (!result) { this.status = false; this.finishStart(); return; }
     if (result.status == 200 && result.body) {
@@ -754,6 +778,7 @@ User.prototype.parsTokenSdcResult = function(data) {
     }
 };
 User.prototype.parsTokenResult = function(data) {
+    if (this.ignoreResponse()) return;
     var result = safeJsonParse(data);
     if (!result) { this.status = false; this.finishStart(); return; }
     if (result.status == 200 && result.body) {
@@ -778,6 +803,7 @@ User.prototype.getFolders = function() {
     }.bind(this));
 };
 User.prototype.parsFoldersResult = function(data) {
+    if (this.ignoreResponse()) return;
     var result = safeJsonParse(data);
     if (!result) { this.status = false; this.finishStart(); return; }
     if (result.status == 200) {
@@ -821,6 +847,7 @@ User.prototype.getMessagesUnread = function() {
     }.bind(this));
 };
 User.prototype.parsMessagesUnread = function(data) {
+    if (this.ignoreResponse()) return;
     var result = safeJsonParse(data);
     if (!result) { delete this._pendingCount; this.finishStart(); return; }
     if (result.status == 200 && Array.isArray(result.body)) {

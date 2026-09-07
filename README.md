@@ -8,10 +8,10 @@
 
 [Последний релиз](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/latest)
 
-| Браузер | Архив версии 1.0.2 | Установка |
+| Браузер | Архив версии 1.0.3 | Установка |
 | --- | --- | --- |
-| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.2/Mail.ru-Checker-Forge-Chrome-1.0.2.zip) | Распакованное расширение |
-| Firefox 142+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.2/Mail.ru-Checker-Forge-Firefox-1.0.2.zip) | Тестовая сборка, временное дополнение |
+| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.3/Mail.ru-Checker-Forge-Chrome-1.0.3.zip) | Распакованное расширение |
+| Firefox 142+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.3/Mail.ru-Checker-Forge-Firefox-1.0.3.zip) | Тестовая сборка, временное дополнение |
 
 Firefox: подпись Mozilla и публикация в каталоге пока не выполнены. Временное дополнение удаляется после перезапуска браузера.
 
@@ -84,12 +84,13 @@ Firefox не поддерживает кнопки внутри системны
 node scripts/build.js
 ```
 
-Результат: отдельные папки `artifacts/1.0.2/chrome` и `artifacts/1.0.2/firefox`. Для одного браузера используйте `node scripts/build.js chrome` или `node scripts/build.js firefox`. Перед повторной сборкой переместите предыдущую папку результата.
+Результат: отдельные папки `artifacts/<версия>/chrome` и `artifacts/<версия>/firefox`, где версия берётся из `manifest.json`. Для одного браузера используйте `node scripts/build.js chrome` или `node scripts/build.js firefox`. Перед повторной сборкой переместите предыдущую папку результата.
 
 Для создания ZIP упакуйте содержимое нужной папки: `manifest.json` должен находиться в корне архива.
 
 ```text
 node tests/regression.js
+node tests/review.js
 ```
 
 Тесты проверяют синхронизацию ящиков, действия с письмами, настройки, лимит списка, локальный кэш, обработку ошибок, напоминания, а также фоновые скрипты, звуки и уведомления Firefox. Автотесты используют тестовые данные; работу с почтой можно проверить после авторизации в браузере.
@@ -102,7 +103,9 @@ node tests/regression.js
 - `offscreen.html`, `offscreen.js` — звук в Chrome;
 - `manifest.json` — исходный манифест Chrome;
 - `scripts/build.js` — подготовка сборок Chrome и Firefox;
-- `tests/regression.js` — регрессионные проверки.
+- `tests/regression.js` — регрессионные проверки;
+- `tests/review.js` — проверки запоздалых ответов, кэша, Unicode и создания звукового документа;
+- `tests/browser-smoke.js` — проверка готовой папки расширения в отдельном профиле Chrome или Firefox с тестовыми письмами.
 
 ## Лицензия
 
