@@ -8,10 +8,10 @@
 
 [Последний релиз](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/latest)
 
-| Браузер | Архив версии 1.0.3 | Установка |
+| Браузер | Архив версии 1.0.4 | Установка |
 | --- | --- | --- |
-| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.3/Mail.ru-Checker-Forge-Chrome-1.0.3.zip) | Распакованное расширение |
-| Firefox 142+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.3/Mail.ru-Checker-Forge-Firefox-1.0.3.zip) | Тестовая сборка, временное дополнение |
+| Chrome 120+ | [Скачать для Chrome](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.4/Mail.ru-Checker-Forge-Chrome-1.0.4.zip) | Распакованное расширение |
+| Firefox 142+ | [Скачать для Firefox](https://github.com/numbereleven-a/Mail.ru-Checker-Forge/releases/download/v1.0.4/Mail.ru-Checker-Forge-Firefox-1.0.4.zip) | Тестовая сборка, временное дополнение |
 
 Firefox: подпись Mozilla и публикация в каталоге пока не выполнены. Временное дополнение удаляется после перезапуска браузера.
 

@@ -268,13 +268,13 @@ async function testBackground() {
     context.app.view.notifications({
         subject: 'A &amp; B',
         snippet: 'C &quot;D&quot;',
-        correspondents: { from: [{ name: 'X &amp; Y', avatars: { default: 'http://example.com/avatar.png' } }] }
+        correspondents: { from: [{ name: 'X &amp; Y', avatars: { default: 'https://example.com/avatar.png' } }] }
     }, 'first@example.com');
     const notification = env.notificationOptions.at(-1);
     assert.strictEqual(notification.title, 'X & Y', 'Notification sender must decode HTML entities');
     assert.strictEqual(notification.message, packageIsFirefox ? 'A & B\nC "D"' : 'A & B', 'Notification subject must decode HTML entities');
     if (!packageIsFirefox) assert.strictEqual(notification.contextMessage, 'C "D"', 'Notification preview must decode HTML entities');
-    assert.strictEqual(notification.iconUrl, 'chrome-extension://test/img/48_activ.png', 'Notification avatars must use HTTPS or the local fallback');
+    assert.strictEqual(notification.iconUrl, 'chrome-extension://test/img/48_activ.png', 'Notifications must use the local icon even when a remote avatar is available');
 
     firstUser.messages = [{ id: 123, folder: 7 }];
     firstUser.count = 1;
@@ -449,7 +449,7 @@ function testStaticBoundaries() {
     assert(popupSource.includes('button.dataset.msgId'), 'Message IDs must be assigned through dataset');
     assert.strictEqual(manifest.name, 'Mail.ru Checker Forge');
     assert.strictEqual(manifest.action.default_title, 'Mail.ru Checker Forge');
-    assert.strictEqual(manifest.version, '1.0.3');
+    assert.strictEqual(manifest.version, '1.0.4');
     if (packageIsFirefox) {
         assert.strictEqual(manifest.browser_specific_settings.gecko.strict_min_version, '142.0');
         assert(!manifest.permissions.includes('offscreen'));

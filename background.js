@@ -465,10 +465,6 @@ View.prototype.addListener = function() {
 };
 View.prototype.notifications = function(mess, email) {
     var name = decodeHtmlEntities(getFromName(mess));
-    var from = mess.correspondents && mess.correspondents.from && mess.correspondents.from[0];
-    var avatars = from && from.avatars;
-    var avatar = avatars ? normalizeHttpsUrl(avatars['50x50'] || avatars['180x180'] || avatars['default'] || '') : '';
-    if (!avatar) avatar = chrome.runtime.getURL('img/48_activ.png');
     var subject = decodeHtmlEntities(mess.subject || 'Без темы');
     var snippet = decodeHtmlEntities(mess.snippet || '');
     var opt = {
@@ -476,7 +472,7 @@ View.prototype.notifications = function(mess, email) {
         title: name,
         message: subject == '' ? 'Без темы': subject,
         contextMessage: snippet,
-        iconUrl: avatar,
+        iconUrl: chrome.runtime.getURL('img/48_activ.png'),
         priority: 1,
         buttons: [{title: "Прочитать"}, {title: "Закрыть"}]
     };
